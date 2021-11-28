@@ -15,6 +15,7 @@ export default function AreaSearch(): JSX.Element {
   const [pickedCityArea, setPickedCityArea] = useState<PickedArea>({ area: '台北市' });
 
   const [isPicking, setIsPicking] = useState<boolean>(false);
+  const [isPickingCity, setIsPickingCity] = useState<boolean>(false);
   const cityItems: Map<AreaCategories, CityEnum[]> = new Map([
     ['台北市', [CityEnum.臺北市, CityEnum.新北市, CityEnum.桃園市, CityEnum.基隆市, CityEnum.新竹市, CityEnum.新竹縣, CityEnum.苗栗縣]],
     ['中部地區', [CityEnum.臺中市, CityEnum.彰化縣, CityEnum.南投縣, CityEnum.雲林縣, CityEnum.嘉義縣, CityEnum.嘉義市]],
@@ -51,22 +52,28 @@ export default function AreaSearch(): JSX.Element {
       )}
       {isPicking && (
         <div className="mt-10 w-full">
-          <div className="flex flex-wrap">
+          <div className="flex flex-wrap justify-between">
             {Array.from(cityItems).map(([cityArea, enumItems]) => {
               const picked: boolean = cityArea === pickedCityArea.area;
               const buttonTheme = picked ? 'bg-blue-A200 text-white' : 'border border-blue-900 bg-white text-blue-700';
+
+              const smallButtonClass = cityArea === '東部地區' || cityArea === '離島地區' ? 'flex-grow' : 'w-full';
+
               return (
-                <div className="relative" key={cityArea}>
+                <div className={`relative ${smallButtonClass} flex-grow lg:w-32 lr-0 lg:mr-5 h-14 mt-5 lg:mt-0`} key={cityArea}>
                   <button
-                    onClick={() => setPickedCityArea({ area: cityArea })}
-                    className={`w-32 mr-5 h-14 rounded-3xl font-noto-sans ${buttonTheme}`}
+                    onClick={() => {
+                      setPickedCityArea({ area: cityArea });
+
+                      setIsPickingCity(true);
+                    }}
+                    className={`rounded-3xl w-full h-full font-noto-sans ${buttonTheme}`}
                   >
                     {cityArea}
                   </button>
-                  {(isPicking && picked) && (
+                  {(isPickingCity && picked) && (
                     <select
-                      className="absolute -bottom-11 left-3 w-32 rounded-lg"
-                      defaultValue={0}
+                      className="absolute -bottom-11 right-0 lg:left-3 w-60 lg:w-32 rounded-lg z-10"
                       onChange={(e: React.ChangeEvent<HTMLSelectElement> & { target: { value: keyof typeof CityEnum } }) => {
                         const cityName = e.target.value;
                         const cityValue  = CityEnum[e.target.value];
@@ -75,6 +82,7 @@ export default function AreaSearch(): JSX.Element {
                           city: cityValue,
                           cityName,
                         });
+                        setIsPickingCity(false);
                       }}
                     >
                       {enumItems.map((city) => {
@@ -84,7 +92,6 @@ export default function AreaSearch(): JSX.Element {
                           <option
                             key={city}
                             value={targetCity}
-                            className=""
                           >
                             {targetCity}
                           </option>
@@ -102,6 +109,7 @@ export default function AreaSearch(): JSX.Element {
               className="px-4 py-3 h-12 rounded-3xl w-full sm:w-80 font-noto-sans text-base text-blue-900 border border-blue-900 box-border bg-white mr-0 sm:mr-5"
               onClick={() => {
                 setIsPicking(false);
+                setIsPickingCity(false);
                 rollback();
               }}
             >
@@ -111,6 +119,7 @@ export default function AreaSearch(): JSX.Element {
               className="px-4 py-3 h-12 rounded-3xl w-full sm:w-80 font-noto-sans text-base text-white bg-blue-900 mt-5 sm:mt-0"
               onClick={() => {
                 setIsPicking(false);
+                setIsPickingCity(false);
               }}
             >
               確定
