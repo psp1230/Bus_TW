@@ -1,12 +1,19 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import BusIcon from '@/assets/img/bus-icon.png';
 import CityEnum from '@/enum/CityEnum';
 
+type PickedArea = {
+  area: AreaCategories,
+  city?: CityEnum,
+  cityName?: keyof typeof CityEnum,
+};
+
+const defaultValue: PickedArea = { area: '台北市' };
+
 export default function AreaSearch(): JSX.Element {
-  const [oldStatus, setOldStatus] = useState<({
-    pickedCityArea: AreaCategories,
-  })>({ pickedCityArea: '台北市' });
-  const [pickedCityArea, setPickedCityArea] = useState<AreaCategories>('台北市');
+  const [oldStatus, setOldStatus] = useState<PickedArea>(defaultValue);
+  const [pickedCityArea, setPickedCityArea] = useState<PickedArea>({ area: '台北市' });
+
   const [isPicking, setIsPicking] = useState<boolean>(false);
   const cityItems: Map<AreaCategories, CityEnum[]> = new Map([
     ['台北市', [CityEnum.臺北市, CityEnum.新北市, CityEnum.桃園市, CityEnum.基隆市, CityEnum.新竹市, CityEnum.新竹縣, CityEnum.苗栗縣]],
@@ -20,7 +27,7 @@ export default function AreaSearch(): JSX.Element {
    * 狀態回溯
    */
   function rollback() {
-    setPickedCityArea(oldStatus.pickedCityArea);
+    setPickedCityArea(oldStatus);
   }
 
   return (
@@ -28,16 +35,14 @@ export default function AreaSearch(): JSX.Element {
       <div className="flex items-center">
         <img className="w-16 h-16 mr-5" src={BusIcon} alt="bus icon" />
         <p className="font-noto-sans font-bold text-4xl text-white">
-          {pickedCityArea}
+          {pickedCityArea.area} {pickedCityArea.cityName && <span>- {pickedCityArea.cityName}</span>}
         </p>
       </div>
       {!isPicking && (
         <button
           className="py-3 mt-5 sm:mt-0 px-4 h-12 w-full sm:w-32 bg-blue-900 rounded-3xl text-white font-noto-sans text-base cursor-pointer"
           onClick={() => {
-            setOldStatus({
-              pickedCityArea: pickedCityArea,
-            });
+            setOldStatus(pickedCityArea);
             setIsPicking(true);
           }}
         >
@@ -48,25 +53,46 @@ export default function AreaSearch(): JSX.Element {
         <div className="mt-10 w-full">
           <div className="flex flex-wrap">
             {Array.from(cityItems).map(([cityArea, enumItems]) => {
-              const picked: boolean = cityArea === pickedCityArea;
+              const picked: boolean = cityArea === pickedCityArea.area;
               const buttonTheme = picked ? 'bg-blue-A200 text-white' : 'border border-blue-900 bg-white text-blue-700';
               return (
-                <button
-                  key={cityArea}
-                  onClick={() => setPickedCityArea(cityArea)}
-                  className={`w-32 mr-5 h-14 rounded-3xl font-noto-sans relative ${buttonTheme}`}
-                >
-                  {cityArea}
+                <div className="relative" key={cityArea}>
+                  <button
+                    onClick={() => setPickedCityArea({ area: cityArea })}
+                    className={`w-32 mr-5 h-14 rounded-3xl font-noto-sans ${buttonTheme}`}
+                  >
+                    {cityArea}
+                  </button>
                   {(isPicking && picked) && (
-                    <select>
+                    <select
+                      className="absolute -bottom-11 left-3 w-32 rounded-lg"
+                      defaultValue={0}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement> & { target: { value: keyof typeof CityEnum } }) => {
+                        const cityName = e.target.value;
+                        const cityValue  = CityEnum[e.target.value];
+                        setPickedCityArea({
+                          area: pickedCityArea.area,
+                          city: cityValue,
+                          cityName,
+                        });
+                      }}
+                    >
                       {enumItems.map((city) => {
+                        const cityKeys = Object.keys(CityEnum) as Array<keyof typeof CityEnum>;
+                        const targetCity = cityKeys.find((item) => CityEnum[item] === city);
                         return (
-                          <option key={city} className="">{city}</option>
+                          <option
+                            key={city}
+                            value={targetCity}
+                            className=""
+                          >
+                            {targetCity}
+                          </option>
                         );
                       })}
                     </select>
                   )}
-                </button>
+                </div>
               );
             })}
           </div>
