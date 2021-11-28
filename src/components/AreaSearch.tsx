@@ -7,7 +7,7 @@ export default function AreaSearch(): JSX.Element {
     pickedCityArea: AreaCategories,
   })>({ pickedCityArea: '台北市' });
   const [pickedCityArea, setPickedCityArea] = useState<AreaCategories>('台北市');
-  const [picking, setPicking] = useState<boolean>(false);
+  const [isPicking, setIsPicking] = useState<boolean>(false);
   const cityItems: Map<AreaCategories, CityEnum[]> = new Map([
     ['台北市', [CityEnum.臺北市, CityEnum.新北市, CityEnum.桃園市, CityEnum.基隆市, CityEnum.新竹市, CityEnum.新竹縣, CityEnum.苗栗縣]],
     ['中部地區', [CityEnum.臺中市, CityEnum.彰化縣, CityEnum.南投縣, CityEnum.雲林縣, CityEnum.嘉義縣, CityEnum.嘉義市]],
@@ -31,20 +31,20 @@ export default function AreaSearch(): JSX.Element {
           {pickedCityArea}
         </p>
       </div>
-      {!picking && (
+      {!isPicking && (
         <button
           className="py-3 mt-5 sm:mt-0 px-4 h-12 w-full sm:w-32 bg-blue-900 rounded-3xl text-white font-noto-sans text-base cursor-pointer"
           onClick={() => {
             setOldStatus({
               pickedCityArea: pickedCityArea,
             });
-            setPicking(true);
+            setIsPicking(true);
           }}
         >
           更換地區
         </button>
       )}
-      {picking && (
+      {isPicking && (
         <div className="mt-10 w-full">
           <div className="flex flex-wrap">
             {Array.from(cityItems).map(([cityArea, enumItems]) => {
@@ -57,25 +57,34 @@ export default function AreaSearch(): JSX.Element {
                   className={`w-32 mr-5 h-14 rounded-3xl font-noto-sans relative ${buttonTheme}`}
                 >
                   {cityArea}
+                  {(isPicking && picked) && (
+                    <select>
+                      {enumItems.map((city) => {
+                        return (
+                          <option key={city} className="">{city}</option>
+                        );
+                      })}
+                    </select>
+                  )}
                 </button>
               );
             })}
           </div>
-          <hr className="my-10 border-white" />
-          <div className="flex justify-around">
+          <hr className="my-5 sm:my-10 border-white" />
+          <div className="flex flex-col sm:flex-row sm:justify-around">
             <button
-              className="px-4 py-3 h-12 rounded-3xl w-80 font-noto-sans text-base text-blue-900 border border-blue-900 box-border bg-white"
+              className="px-4 py-3 h-12 rounded-3xl w-full sm:w-80 font-noto-sans text-base text-blue-900 border border-blue-900 box-border bg-white mr-0 sm:mr-5"
               onClick={() => {
-                setPicking(false);
+                setIsPicking(false);
                 rollback();
               }}
             >
               取消
             </button>
             <button
-              className="px-4 py-3 h-12 rounded-3xl w-80 font-noto-sans text-base text-white bg-blue-900"
+              className="px-4 py-3 h-12 rounded-3xl w-full sm:w-80 font-noto-sans text-base text-white bg-blue-900 mt-5 sm:mt-0"
               onClick={() => {
-                setPicking(false);
+                setIsPicking(false);
               }}
             >
               確定
