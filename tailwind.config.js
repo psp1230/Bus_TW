@@ -56,6 +56,10 @@ module.exports = {
           700: '#1976D2',
           800: '#1565C0',
           900: '#0D47A1',
+          'A100': '#82B1FF',
+          'A200': '#448AFF',
+          'A400': '#2979FF',
+          'A700': '#2962FF',
         },
         red: {
           50: '#FFEBEE',
@@ -99,6 +103,10 @@ module.exports = {
     fontFamily: {
       roboto: ['Roboto', 'Noto Sans TC'],
       'noto-sans': ['Noto Sans TC', 'Roboto']
+    },
+    backgroundImage: {
+      'banner-city-desktop': "url('/src/assets/img/desktop/Banner.png')",
+      'banner-city-mobile': "url('/src/assets/img/mobile/Banner.png')",
     }
   },
   variants: {
