@@ -1,3 +1,15 @@
+declare type NameType = {
+  /**
+   * 中文繁體名稱
+   */
+  zhTw?: string;
+
+  /**
+   * 英文名稱
+   */
+  en?: string;
+};
+
 declare type TourismPicture = {
   /**
    * 照片連結網址1
@@ -78,3 +90,21 @@ declare type Params = {
    */
   'spatialFilter'?: any;
 };
+
+
+declare type BikeFormType = {
+  ubike1?: boolean,
+  ubike2?: boolean,
+};
+
+
+declare type BikeStatusFormType = {
+  normal?: boolean,
+  runout?: boolean,
+  'full-rent'?: boolean,
+  'stop-rent'?: boolean,
+};
+
+type SearchResultItem = BikeStation & { serviceStatus?: 0 | 1 | 2, availableRentBikes?: number, availableReturnBikes?: number };
+
+declare type AreaCategories = '台北市' | '中部地區' | '南部地區' | '東部地區' | '離島地區';
